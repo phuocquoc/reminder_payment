@@ -14,24 +14,32 @@ def send_telegram(bot_token, chat_id, message):
 
 def remind():
     vn_tz = pytz.timezone("Asia/Ho_Chi_Minh")
-    today = datetime.now(vn_tz)
-    today_day = today.day
+    now = datetime.now(vn_tz)
+    today_day = now.day
+    current_hour = now.hour
 
+    # Load ENV variables
     bot_token = os.getenv("TELEGRAM_TOKEN")
     chat_id = os.getenv("CHAT_ID")
     cards_json = os.getenv("CARDS")
+    remind_hours_json = os.getenv("REMIND_HOURS")
 
-    if not bot_token or not chat_id or not cards_json:
+    if not bot_token or not chat_id or not cards_json or not remind_hours_json:
         print("❌ Thiếu biến môi trường!")
         return
 
     try:
         cards = json.loads(cards_json)
+        remind_hours = json.loads(remind_hours_json)
     except json.JSONDecodeError:
-        print("❌ CARDS không phải chuỗi JSON hợp lệ!")
+        print("❌ Biến môi trường không phải chuỗi JSON hợp lệ!")
         return
 
-    print(f"📅 [{today.strftime('%Y-%m-%d %H:%M')}] Kiểm tra nhắc nhở cho ngày {today_day}")
+    if current_hour not in remind_hours:
+        print(f"⏰ Bỏ qua (hiện tại là {current_hour}h, không thuộc giờ nhắc {remind_hours})")
+        return
+
+    print(f"📅 [{now.strftime('%Y-%m-%d %H:%M')}] Đang kiểm tra nhắc nhở...")
 
     for card in cards:
         if card["due_day"] - today_day == 1:
