@@ -33,7 +33,7 @@ def remind(is_test=False):
         cards = json.loads(cards_json)
         remind_hours = json.loads(remind_hours_json)
     except json.JSONDecodeError:
-        print("❌ Biến môi trường không hợp lệ!")
+        print("❌Load Json Fail!", cards)
         return
 
     if is_test:
@@ -57,7 +57,7 @@ def remind(is_test=False):
     print(f"📅 [{now.strftime('%Y-%m-%d %H:%M')}] Đang kiểm tra nhắc nhở...")
 
     for card in cards:
-        if card["due_day"] - today_day == 1:
+        if card["due_day"] - today_day in [1,0]:
             msg = (
                 f"🔔 Nhắc thanh toán thẻ tín dụng (còn 1 ngày)!\n"
                 f"💳 Thẻ: {card['name']}\n"
